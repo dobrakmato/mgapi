@@ -1,0 +1,407 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: 'MGAPI Json API'
+  description: | 
+    This is specification of **MGAPI** master server's JSON HTTP API, which
+    is used by slaves to communicate with master server. It can be used
+    to create many useful administration applications.
+schemes:
+  - https
+  - http
+basePath: /v1
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /servers:
+    get:
+      summary: Used to get network servers.
+      description: Gets all registered `Server` objects.
+      tags: 
+        - Server
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfServers
+            type: array
+            items:
+              title: Server
+              type: object
+              $ref: '#/definitions/Server'
+        500:
+          description: Internal server error
+    post:
+        description: Registers new server on network.
+        tags: 
+          - Server
+        responses:
+          201:
+            description: Registration successful
+  /servers/{uuid}:
+    get:
+      description: Gets all information about specific `Server` object.
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of server
+          type: string
+          required: true
+      tags: 
+        - Server
+      responses:
+        200:
+          description: Successful reponse
+          schema:
+            $ref: '#/definitions/Server'
+    delete:
+      description: Removes specified `Server` object. 
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of server
+          type: string
+          required: true
+      tags:
+        - Server
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Specified server not found
+    head:
+      description: Checks specified `Server` object. 
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of server
+          type: string
+          required: true
+      tags:
+        - Server
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Specified server not found
+  
+  /rooms:
+    get:
+      description: Gets all `Room` objects from all servers.
+      tags:
+        - Room
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfRooms
+            type: array
+            items:
+              title: Room
+              type: object
+              $ref: '#/definitions/Room'
+        500:
+          description: Internal server error
+    post:
+      description: Registers new room.
+      tags:
+        - Room
+      responses:
+        201:
+          description: Registration successful
+        500:
+          description: Internal server error
+          
+  /rooms/{uuid}:
+    get:
+      description: Gets specified room.
+      tags:
+        - Room
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Room'
+        500:
+          description: Internal server error
+    post:
+      description: Updates information about specified room.
+      tags:
+        - Room
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Room'
+        500:
+          description: Internal server error
+    delete:
+      description: Removes specifed room.
+      tags:
+        - Room
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Room with specified UUID is not found
+        500:
+          description: Internal server error
+    head:
+      description: Removes specifed room.
+      tags:
+        - Room
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Room with specified UUID is not found
+  
+  /players/{uuid}:
+    get:
+      description: Gets `Player` object by specified UUID.
+      tags:
+        - Player
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Sucessful response
+          schema:
+            $ref: '#/definitions/Player'
+        404:
+          description: Room with specified UUID was not found
+  
+  /games:
+    get:
+      description: Get all `Game` objects.
+      tags:
+        - Game
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfGames
+            type: array
+            items:
+              $ref: '#/definitions/Game'
+    post:
+      description: Creates new `Game` object.
+      tags:
+        - Game
+      responses:
+        201:
+          description: Registration successful
+        500:
+          description: Internal server error
+  
+  /games/{uuid}:
+    get:
+      description: Gets `Game` object by specified UUID.
+      tags:
+        - Game
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Game'
+        404:
+          description: Game with specified UUID was not found
+        500:
+          description: Internal server error
+    post:
+      description: Updates `Game` object by specified UUID.
+      tags:
+        - Game
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Game with specified UUID was not found
+        500:
+          description: Internal server error
+    head:
+      description: Checks `Game` object existence.
+      tags:
+        - Game
+      parameters: 
+        - name: uuid
+          in: path
+          description: UUID of room
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Game with specified UUID was not found
+        500:
+          description: Internal server error
+  
+definitions:
+  # Enums
+  
+  RoomState:
+    type: string
+    description: | 
+      State of Room. Each state describes what 
+      is currently happening in game room.
+    enum:
+      - DISABLED
+      - WAITING
+      - PLAYING
+      - PLAYING_CANJOIN
+      - RESETING
+  
+  ServerState:
+    type: string
+    description: |
+      State of server. The server can be online, offline or disabled.
+    enum:
+     - ONLINE
+     - OFFLINE
+     - DISABLED
+     
+  ServerType:
+    type: string
+    description: |
+      Type of the server.
+    enum:
+      - LOBBY
+      - GAME
+  
+  # Objects
+  
+  UUID:
+    type: string
+    description: |
+      String representation of unique identifier specified by 
+      java.util.UUID class in default toString() format. For example
+      069a79f4-44e9-4726-a5be-fca90e38aaf.
+  
+  Server:
+    type: object
+    description: |
+      Server object represents minigame network Minecraft server 
+      with configured and enabled MGAPI slave plugin.
+    properties:
+      uuid:
+        $ref: '#/definitions/UUID'
+        description: UUID of the server.
+      name:
+        type: string
+        description: Human readable name of the server.
+      type:
+        $ref: '#/definitions/ServerType'
+      state:
+        $ref: '#/definitions/ServerState'
+      rooms:
+        type: array
+        description: Array of all rooms on the server.
+        items:
+          $ref: '#/definitions/Room'
+  Room:
+    type: object
+    description: |
+      Room represents joinable and playable minigame on specific 
+      minigame map.
+    properties:
+      uuid:
+        $ref: '#/definitions/UUID'
+        description: UUID of the room.
+      name:
+        type: string
+        description: Human readable name of the room.
+      state:
+        $ref: '#/definitions/RoomState'
+      game:
+        $ref: '#/definitions/Game'
+      max_players:
+        type: integer
+        format: int32
+        description: Maximum amount of players that is allowed in the room.
+      players:
+        type: array
+        description: Array containing all players in the room.
+        items:
+          $ref: '#/definitions/Player'
+  
+  Game:
+    type: object
+    description: |
+      Game represent actual installed version of minigame plugin with
+      specific version.
+    properties:
+      uuid:
+        $ref: '#/definitions/UUID'
+        description: UUID of the game plugin.
+      name:
+        type: string
+        description: Human readable name of the game plugin.
+      version:
+        type: string
+        description: Version of this game plugin.
+  
+  Player:
+    type: object
+    description: |
+      Player represents user account on minigame network.
+    required: [uuid, name]
+    properties:
+      uuid:
+        $ref: '#/definitions/UUID'
+        description: Mojang UUID of the player.
+      name:
+        type: string
+        description: Last known name of the player.
+      friends:
+        type: array
+        description: | 
+          Array of other players, that the player
+          marked as friends.
+        items:
+          $ref: '#/definitions/Player'
+      ip:
+        type: string
+        description: Last known IP address of the player.
