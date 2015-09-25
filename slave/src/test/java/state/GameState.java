@@ -28,7 +28,15 @@ package state;
 
 import eu.matejkormuth.mgapi.api.RoomState;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class GameState {
+
+    // <Field name, Field>
+    final Map<String, Field> shared = new HashMap<>();
+
     // Corresponding room state.
     private final RoomState roomState;
     // Reference back to original room.
@@ -37,6 +45,16 @@ public abstract class GameState {
     protected GameState(RoomState roomState, StateGameRoom gameRoom) {
         this.roomState = roomState;
         this.gameRoom = gameRoom;
+
+        this.initShared();
+    }
+
+    private void initShared() {
+        for (Field field : this.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Shared.class)) {
+                shared.put(field.getName(), field);
+            }
+        }
     }
 
     public StateGameRoom getRoom() {

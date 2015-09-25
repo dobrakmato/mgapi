@@ -24,12 +24,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.comunication;
+package state;
 
-import eu.matejkormuth.mgapi.slave.api.GameRoom;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public class NotifyingService {
-    public void stateChange(GameRoom gameRoom) {
-
-    }
+/**
+ * Indicates that this field is shared between all game states.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Shared {
 }

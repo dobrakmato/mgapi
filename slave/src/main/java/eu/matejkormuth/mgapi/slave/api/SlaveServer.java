@@ -24,25 +24,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.comunication;
+package eu.matejkormuth.mgapi.slave.api;
 
-import eu.matejkormuth.mgapi.slave.api.GameRoom;
+public class SlaveServer {
+    private final String uuid;
 
-public class Notifier {
-
-    private final NotifyingService service;
-    private final GameRoom gameRoom;
-
-    public Notifier(NotifyingService service, GameRoom gameRoom) {
-        this.service = service;
-        this.gameRoom = gameRoom;
+    public SlaveServer(String uuid) {
+        this.uuid = uuid;
     }
 
-    public void push() {
-        this.service.stateChange(this.gameRoom);
-    }
-
-    public void push(Object _null) {
-        this.push();
+    public String getUuid() {
+        return uuid;
     }
 }

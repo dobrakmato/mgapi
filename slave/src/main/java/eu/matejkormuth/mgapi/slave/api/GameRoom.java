@@ -31,8 +31,6 @@ import eu.matejkormuth.mgapi.api.PlayerProfile;
 import eu.matejkormuth.mgapi.api.Room;
 import eu.matejkormuth.mgapi.api.RoomState;
 import eu.matejkormuth.mgapi.slave.api.impl.PlayerProfileImpl;
-import eu.matejkormuth.mgapi.slave.comunication.Notifier;
-import eu.matejkormuth.mgapi.slave.comunication.NotifyingService;
 import net.jodah.expiringmap.ExpiringMap;
 import org.bukkit.entity.Player;
 
@@ -47,11 +45,8 @@ public abstract class GameRoom implements Room, MatchmakingTarget {
     // Slot is reserved for 7 seconds.
     private static final int RESERVED_SLOT_EXPIRATION = 7;
 
-    private final NotifyingService notifyingService;
-    protected final Notifier notifier;
-
     // State changing variables.
-    private final State<RoomState> state = State.of(RoomState.DISABLED);
+    private RoomState state = RoomState.DISABLED;
 
     private final Map<PlayerProfile, Object> reservations = ExpiringMap.builder()
             .expiration(RESERVED_SLOT_EXPIRATION, TimeUnit.SECONDS)
@@ -68,44 +63,46 @@ public abstract class GameRoom implements Room, MatchmakingTarget {
     private final Game game;
     private final int maxPlayers;
 
-    protected GameRoom(NotifyingService notifyingService, UUID uuid, String name, Game game, int maxPlayers) {
-        this.notifyingService = notifyingService;
+    protected GameRoom(UUID uuid, String name, Game game, int maxPlayers) {
         this.uuid = uuid;
         this.name = name;
         this.game = game;
         this.maxPlayers = maxPlayers;
+    }
 
-        // Create state notifier.
-        this.notifier = new Notifier(this.notifyingService, this);
-
-        // Bind all state variables.
-        this.state.bind(this.notifier::push);
+    protected void push() {
+        // TODO: Send state to master.
     }
 
     protected void setRoomState(RoomState state) {
-        this.state.set(state);
+        this.state = state;
+        this.push();
     }
 
     public void create() {
-        this.state.set(RoomState.WAITING);
+        this.state = RoomState.WAITING;
+        this.push();
 
         this.onCreate();
     }
 
     public void start() {
-        this.state.set(RoomState.PLAYING);
+        this.state = RoomState.PLAYING;
+        this.push();
 
         this.onStart();
     }
 
     public void reset() {
-        this.state.set(RoomState.RESETING);
+        this.state = RoomState.RESETING;
+        this.push();
 
         this.onReset();
     }
 
     public void destroy() {
-        this.state.set(RoomState.DISABLED);
+        this.state = RoomState.DISABLED;
+        this.push();
 
         this.onDestroy();
     }
@@ -187,7 +184,7 @@ public abstract class GameRoom implements Room, MatchmakingTarget {
 
     @Override
     public RoomState getState() {
-        return state.get();
+        return state;
     }
 
 }

@@ -28,19 +28,23 @@ package state;
 
 import eu.matejkormuth.mgapi.api.Game;
 import eu.matejkormuth.mgapi.slave.api.GameRoom;
-import eu.matejkormuth.mgapi.slave.comunication.NotifyingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class StateGameRoom extends GameRoom {
+
+    private static final Logger log = LoggerFactory.getLogger(StateGameRoom.class);
 
     // All possible game states.
     private final Map<Class<? extends GameState>, GameState> allStates = new HashMap<>();
     // Current (last) state.
     private GameState lastState = null;
 
-    protected StateGameRoom(NotifyingService notifyingService, UUID uuid, String name, Game game, int maxPlayers) {
-        super(notifyingService, uuid, name, game, maxPlayers);
+    protected StateGameRoom(UUID uuid, String name, Game game, int maxPlayers) {
+        super(uuid, name, game, maxPlayers);
 
         // Gather all state.
         List<GameState> allStates = new ArrayList<>();
@@ -67,10 +71,42 @@ public abstract class StateGameRoom extends GameRoom {
             this.lastState.onDeactivate(stateInstance);
         }
 
+        // Copy shared values.
+        copySharedFromTo(this.lastState, stateInstance);
+
         // Activate new game state.
         this.setRoomState(stateInstance.getRoomState());
         stateInstance.onActivate(this.lastState);
         this.lastState = stateInstance;
+    }
+
+    private void copySharedFromTo(GameState from, GameState to) {
+        for (Map.Entry<String, Field> entry : from.shared.entrySet()) {
+            // Fix accessibility.
+            if (!entry.getValue().isAccessible()) {
+                entry.getValue().setAccessible(true);
+            }
+
+            // Set value.
+            try {
+                Field target = to.getClass().getDeclaredField(entry.getKey());
+                if (!target.getType().equals(entry.getValue().getType())) {
+                    // Type mismatch.
+                    log.error("Shared field type mismatch in {}.{} of type {} and {}.{} of type {}!",
+                            from.getClass().getName(), entry.getValue().getName(), entry.getValue().getType().getName(),
+                            to.getClass().getName(), target.getName(), target.getType().getName());
+                }
+                try {
+                    target.set(to, entry.getValue().get(from));
+                } catch (IllegalAccessException e) {
+                    log.error("Can't copy shared field!", e);
+                }
+            } catch (NoSuchFieldException e) {
+                log.error("Shared field {} of type {} not present in {}!", entry.getKey(),
+                        entry.getValue().getType().getName(), to.getClass().getName());
+            }
+
+        }
     }
 
     // Provide empty implementations for no more useful methods.

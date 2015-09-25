@@ -24,31 +24,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.rooms;
+package eu.matejkormuth.mgapi.slave.modules.communicaton;
 
-import eu.matejkormuth.mgapi.slave.Dependency;
-import eu.matejkormuth.mgapi.slave.Module;
-import eu.matejkormuth.mgapi.slave.api.GameRoom;
-import eu.matejkormuth.mgapi.slave.api.MGAPI;
-import eu.matejkormuth.mgapi.slave.modules.configuration.ConfigurationsModule;
+import eu.matejkormuth.mgapi.slave.api.MasterServer;
+import eu.matejkormuth.mgapi.slave.api.SlaveServer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class RoomsModule extends Module {
-
-    @Dependency
-    private ConfigurationsModule configurationsModule;
-
-    private List<GameRoom> gameRooms = new ArrayList<>();
-
-    @Override
-    public void onEnable() {
-        MGAPI.roomsModule = this;
-    }
-
-    @Override
-    public void onDisable() {
+public class Communicator {
+    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
 
     }
 }

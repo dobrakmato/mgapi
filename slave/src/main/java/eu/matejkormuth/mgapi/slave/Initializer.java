@@ -27,6 +27,7 @@
 package eu.matejkormuth.mgapi.slave;
 
 
+import eu.matejkormuth.mgapi.slave.modules.communicaton.CommunicationModule;
 import eu.matejkormuth.mgapi.slave.modules.configuration.ConfigurationsModule;
 import eu.matejkormuth.mgapi.slave.modules.filestorage.FileStorageModule;
 
@@ -41,6 +42,7 @@ public class Initializer {
      */
     public void initialize(ModuleProvider provider) {
         // Here goes initialization logic.
+        provider.register(new CommunicationModule());
         provider.register(new ConfigurationsModule());
         provider.register(new FileStorageModule());
 

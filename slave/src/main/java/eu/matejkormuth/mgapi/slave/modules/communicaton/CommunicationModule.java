@@ -24,27 +24,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.rooms;
+package eu.matejkormuth.mgapi.slave.modules.communicaton;
 
 import eu.matejkormuth.mgapi.slave.Dependency;
 import eu.matejkormuth.mgapi.slave.Module;
-import eu.matejkormuth.mgapi.slave.api.GameRoom;
-import eu.matejkormuth.mgapi.slave.api.MGAPI;
+import eu.matejkormuth.mgapi.slave.api.MasterServer;
+import eu.matejkormuth.mgapi.slave.api.SlaveServer;
 import eu.matejkormuth.mgapi.slave.modules.configuration.ConfigurationsModule;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class RoomsModule extends Module {
+public class CommunicationModule extends Module {
 
     @Dependency
     private ConfigurationsModule configurationsModule;
 
-    private List<GameRoom> gameRooms = new ArrayList<>();
+    private Configuration masterConfiguration;
+    private Configuration slaveConfiguration;
+
+    private MasterServer masterServer;
+    private SlaveServer slaveServer;
+    private Communicator communicator;
 
     @Override
     public void onEnable() {
-        MGAPI.roomsModule = this;
+        masterConfiguration = configurationsModule.loadOrCreate("master", new YamlConfiguration());
+        slaveConfiguration = configurationsModule.loadOrCreate("slave", new YamlConfiguration());
+
+        // Create master server object.
+        String ip = masterConfiguration.getString("ip", "127.0.0.1");
+        int port = masterConfiguration.getInt("port", 80);
+        String accessKey = masterConfiguration.getString("accessKey", "not_provided");
+
+        this.masterServer = new MasterServer(ip, port, accessKey);
+
+        // Create slave client object.
+        String uuid = slaveConfiguration.getString("uuid", "not_provided");
+
+        this.slaveServer = new SlaveServer(uuid);
+
+        // Create comunicator.
+        this.communicator = new Communicator(masterServer, slaveServer);
     }
 
     @Override

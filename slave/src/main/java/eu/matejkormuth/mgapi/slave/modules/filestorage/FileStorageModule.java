@@ -1,5 +1,5 @@
 /**
- * WeronicaMC - Plugin for fantasy and creative server.
+ * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
  *

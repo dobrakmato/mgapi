@@ -25,7 +25,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 import eu.matejkormuth.mgapi.api.Game;
-import eu.matejkormuth.mgapi.slave.comunication.NotifyingService;
 import state.GameState;
 import state.StateGameRoom;
 
@@ -34,8 +33,13 @@ import java.util.UUID;
 
 public class TestGameRoom extends StateGameRoom {
 
-    protected TestGameRoom(NotifyingService notifyingService, UUID uuid, String name, Game game, int maxPlayers) {
-        super(notifyingService, uuid, name, game, maxPlayers);
+    protected TestGameRoom(UUID uuid, String name, Game game, int maxPlayers) {
+        super(uuid, name, game, maxPlayers);
+    }
+
+    @Override
+    protected void onCreate() {
+
     }
 
     @Override
