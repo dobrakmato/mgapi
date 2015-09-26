@@ -24,38 +24,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.modules.communicaton;
+package fw.state;
 
-import eu.matejkormuth.mgapi.api.Room;
-import eu.matejkormuth.mgapi.slave.api.MasterServer;
-import eu.matejkormuth.mgapi.slave.api.SlaveServer;
-import net.jodah.expiringmap.internal.NamedThreadFactory;
+import eu.matejkormuth.mgapi.api.RoomState;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Communicator {
+public abstract class GameState {
 
-    private final ThreadFactory threadFactory;
-    private final Executor executor;
+    // <Field name, Field>
+    final Map<String, Field> shared = new HashMap<>();
 
-    private final MasterServer masterServer;
-    private final SlaveServer slaveServer;
+    // Corresponding room state.
+    private final RoomState roomState;
+    // Reference back to original room.
+    private final StateGameRoom gameRoom;
 
-    //private final RequestExecutor[] requestExecutor;
+    protected GameState(RoomState roomState, StateGameRoom gameRoom) {
+        this.roomState = roomState;
+        this.gameRoom = gameRoom;
 
-    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
-        this.slaveServer = slaveServer;
-        this.masterServer = masterServer;
-
-        this.threadFactory = new NamedThreadFactory("CommunicatorWorker-%d");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
+        this.initShared();
     }
 
-    public void updateState(Room room) {
-        //JSON state = buildStateJSON(room);
-        //Request request = Request.post("/rooms/" + room.getUUID().toString());
-        //request.setBody(state.toString());
+    private void initShared() {
+        for (Field field : this.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Shared.class)) {
+                shared.put(field.getName(), field);
+            }
+        }
     }
+
+    public StateGameRoom getRoom() {
+        return gameRoom;
+    }
+
+    public RoomState getRoomState() {
+        return roomState;
+    }
+
+    public abstract void onActivate(GameState oldState);
+
+    public abstract void onDeactivate(GameState newState);
 }

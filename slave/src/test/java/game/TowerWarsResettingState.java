@@ -24,38 +24,52 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.modules.communicaton;
+package game;
 
-import eu.matejkormuth.mgapi.api.Room;
-import eu.matejkormuth.mgapi.slave.api.MasterServer;
-import eu.matejkormuth.mgapi.slave.api.SlaveServer;
-import net.jodah.expiringmap.internal.NamedThreadFactory;
+import eu.matejkormuth.mgapi.api.RoomState;
+import fw.state.GameState;
+import fw.state.Shared;
+import fw.state.StateGameRoom;
+import fw.teams.Team;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+public class TowerWarsResettingState extends GameState {
 
-public class Communicator {
+    // Teams.
+    @Shared
+    Team redTeam = new Team();
+    @Shared
+    Team greenTeam = new Team();
+    @Shared
+    Team yellowTeam = new Team();
+    @Shared
+    Team blueTeam = new Team();
+    @Shared
+    Team defenseTeam = new Team();
 
-    private final ThreadFactory threadFactory;
-    private final Executor executor;
-
-    private final MasterServer masterServer;
-    private final SlaveServer slaveServer;
-
-    //private final RequestExecutor[] requestExecutor;
-
-    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
-        this.slaveServer = slaveServer;
-        this.masterServer = masterServer;
-
-        this.threadFactory = new NamedThreadFactory("CommunicatorWorker-%d");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
+    public TowerWarsResettingState(StateGameRoom testGameRoom) {
+        super(RoomState.RESETING, testGameRoom);
     }
 
-    public void updateState(Room room) {
-        //JSON state = buildStateJSON(room);
-        //Request request = Request.post("/rooms/" + room.getUUID().toString());
-        //request.setBody(state.toString());
+    @Override
+    public void onActivate(GameState oldState) {
+        // When this state is activated, perform large clean up.
+        cleanUp();
+
+        // After we're done cleaning, go to lobby state.
+        getRoom().activate(TowerWarsLobbyState.class);
+    }
+
+    private void cleanUp() {
+        // Clean up teams.
+        redTeam.clear();
+        greenTeam.clear();
+        yellowTeam.clear();
+        blueTeam.clear();
+        defenseTeam.clear();
+    }
+
+    @Override
+    public void onDeactivate(GameState newState) {
+
     }
 }

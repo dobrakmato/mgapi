@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package state;
+package fw.state;
 
 import eu.matejkormuth.mgapi.api.Game;
 import eu.matejkormuth.mgapi.slave.api.GameRoom;

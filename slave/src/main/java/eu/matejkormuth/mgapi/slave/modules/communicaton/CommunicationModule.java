@@ -69,6 +69,17 @@ public class CommunicationModule extends Module {
 
     @Override
     public void onDisable() {
+    }
 
+    public Communicator getCommunicator() {
+        return communicator;
+    }
+
+    public MasterServer getMasterServer() {
+        return masterServer;
+    }
+
+    public SlaveServer getSlaveServer() {
+        return slaveServer;
     }
 }

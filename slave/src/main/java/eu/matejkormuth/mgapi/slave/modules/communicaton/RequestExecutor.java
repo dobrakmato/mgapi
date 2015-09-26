@@ -26,36 +26,5 @@
  */
 package eu.matejkormuth.mgapi.slave.modules.communicaton;
 
-import eu.matejkormuth.mgapi.api.Room;
-import eu.matejkormuth.mgapi.slave.api.MasterServer;
-import eu.matejkormuth.mgapi.slave.api.SlaveServer;
-import net.jodah.expiringmap.internal.NamedThreadFactory;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-public class Communicator {
-
-    private final ThreadFactory threadFactory;
-    private final Executor executor;
-
-    private final MasterServer masterServer;
-    private final SlaveServer slaveServer;
-
-    //private final RequestExecutor[] requestExecutor;
-
-    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
-        this.slaveServer = slaveServer;
-        this.masterServer = masterServer;
-
-        this.threadFactory = new NamedThreadFactory("CommunicatorWorker-%d");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
-    }
-
-    public void updateState(Room room) {
-        //JSON state = buildStateJSON(room);
-        //Request request = Request.post("/rooms/" + room.getUUID().toString());
-        //request.setBody(state.toString());
-    }
+public class RequestExecutor {
 }

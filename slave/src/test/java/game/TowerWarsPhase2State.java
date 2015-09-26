@@ -1,4 +1,4 @@
-/**
+package game; /**
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
@@ -24,38 +24,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.modules.communicaton;
+import eu.matejkormuth.mgapi.api.RoomState;
+import fw.state.GameState;
+import fw.state.Shared;
+import fw.state.StateGameRoom;
+import fw.teams.Team;
 
-import eu.matejkormuth.mgapi.api.Room;
-import eu.matejkormuth.mgapi.slave.api.MasterServer;
-import eu.matejkormuth.mgapi.slave.api.SlaveServer;
-import net.jodah.expiringmap.internal.NamedThreadFactory;
+public class TowerWarsPhase2State extends GameState {
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+    @Shared
+    Team redTeam = new Team();
+    @Shared
+    Team greenTeam = new Team();
+    @Shared
+    Team yellowTeam = new Team();
+    @Shared
+    Team blueTeam = new Team();
+    @Shared
+    Team defenseTeam = new Team();
 
-public class Communicator {
-
-    private final ThreadFactory threadFactory;
-    private final Executor executor;
-
-    private final MasterServer masterServer;
-    private final SlaveServer slaveServer;
-
-    //private final RequestExecutor[] requestExecutor;
-
-    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
-        this.slaveServer = slaveServer;
-        this.masterServer = masterServer;
-
-        this.threadFactory = new NamedThreadFactory("CommunicatorWorker-%d");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
+    protected TowerWarsPhase2State(StateGameRoom gameRoom) {
+        super(RoomState.PLAYING, gameRoom);
     }
 
-    public void updateState(Room room) {
-        //JSON state = buildStateJSON(room);
-        //Request request = Request.post("/rooms/" + room.getUUID().toString());
-        //request.setBody(state.toString());
+    @Override
+    public void onActivate(GameState oldState) {
+
+    }
+
+    @Override
+    public void onDeactivate(GameState newState) {
+
     }
 }

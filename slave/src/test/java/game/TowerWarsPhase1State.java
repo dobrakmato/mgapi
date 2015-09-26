@@ -1,4 +1,4 @@
-/**
+package game; /**
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
@@ -24,23 +24,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 import eu.matejkormuth.mgapi.api.RoomState;
-import state.GameState;
-import state.StateGameRoom;
+import fw.Countdown;
+import fw.Time;
+import fw.state.GameState;
+import fw.state.Shared;
+import fw.state.StateGameRoom;
+import fw.teams.Team;
 
-public class TestGamePlayingState extends GameState {
+public class TowerWarsPhase1State extends GameState {
 
-    protected TestGamePlayingState(StateGameRoom gameRoom) {
+    @Shared
+    Team redTeam = new Team();
+    @Shared
+    Team greenTeam = new Team();
+    @Shared
+    Team yellowTeam = new Team();
+    @Shared
+    Team blueTeam = new Team();
+    @Shared
+    Team defenseTeam = new Team();
+
+    /**
+     * Phase One length is 20 minutes.
+     */
+    private Countdown countdown = new Countdown(Time.ofMinutes(20));
+
+    protected TowerWarsPhase1State(StateGameRoom gameRoom) {
         super(RoomState.PLAYING, gameRoom);
     }
 
     @Override
     public void onActivate(GameState oldState) {
+        // Start phase countdown and subscribe to countdown end.
+        countdown.start();
+        countdown.TimeUpEvent.subscribe(this::timeUp);
+    }
 
+    private void timeUp(Void aVoid) {
+        // Proceed to next phase.
+        getRoom().activate(TowerWarsPhase2State.class);
     }
 
     @Override
     public void onDeactivate(GameState newState) {
-
+        // Unsubscribe and reset countdown.
+        countdown.TimeUpEvent.unsubscribe(this::timeUp);
+        countdown.reset();
     }
 }

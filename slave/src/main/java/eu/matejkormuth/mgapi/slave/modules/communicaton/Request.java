@@ -26,36 +26,21 @@
  */
 package eu.matejkormuth.mgapi.slave.modules.communicaton;
 
-import eu.matejkormuth.mgapi.api.Room;
-import eu.matejkormuth.mgapi.slave.api.MasterServer;
-import eu.matejkormuth.mgapi.slave.api.SlaveServer;
-import net.jodah.expiringmap.internal.NamedThreadFactory;
+public class Request {
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+    private final String method;
+    private final String url;
 
-public class Communicator {
-
-    private final ThreadFactory threadFactory;
-    private final Executor executor;
-
-    private final MasterServer masterServer;
-    private final SlaveServer slaveServer;
-
-    //private final RequestExecutor[] requestExecutor;
-
-    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
-        this.slaveServer = slaveServer;
-        this.masterServer = masterServer;
-
-        this.threadFactory = new NamedThreadFactory("CommunicatorWorker-%d");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
+    public Request(String method, String url) {
+        this.method = method;
+        this.url = url;
     }
 
-    public void updateState(Room room) {
-        //JSON state = buildStateJSON(room);
-        //Request request = Request.post("/rooms/" + room.getUUID().toString());
-        //request.setBody(state.toString());
+    public static Request post(String url) {
+        return new Request("POST", url);
+    }
+
+    public static Request get(String url) {
+        return new Request("GET", url);
     }
 }

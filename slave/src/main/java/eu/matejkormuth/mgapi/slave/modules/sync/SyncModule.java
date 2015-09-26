@@ -24,38 +24,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.modules.communicaton;
+package eu.matejkormuth.mgapi.slave.modules.sync;
 
-import eu.matejkormuth.mgapi.api.Room;
-import eu.matejkormuth.mgapi.slave.api.MasterServer;
-import eu.matejkormuth.mgapi.slave.api.SlaveServer;
-import net.jodah.expiringmap.internal.NamedThreadFactory;
+import eu.matejkormuth.mgapi.slave.Module;
+import eu.matejkormuth.mgapi.slave.PluginAccessor;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+public class SyncModule extends Module {
 
-public class Communicator {
+    private static final Logger log = LoggerFactory.getLogger(SyncModule.class);
+    private JavaPlugin javaPlugin = new PluginAccessor(this).getPlugin();
 
-    private final ThreadFactory threadFactory;
-    private final Executor executor;
+    @Override
+    public void onEnable() {
 
-    private final MasterServer masterServer;
-    private final SlaveServer slaveServer;
-
-    //private final RequestExecutor[] requestExecutor;
-
-    public Communicator(MasterServer masterServer, SlaveServer slaveServer) {
-        this.slaveServer = slaveServer;
-        this.masterServer = masterServer;
-
-        this.threadFactory = new NamedThreadFactory("CommunicatorWorker-%d");
-        this.executor = Executors.newCachedThreadPool(threadFactory);
     }
 
-    public void updateState(Room room) {
-        //JSON state = buildStateJSON(room);
-        //Request request = Request.post("/rooms/" + room.getUUID().toString());
-        //request.setBody(state.toString());
+    @Override
+    public void onDisable() {
+
+    }
+
+    public void sync(Runnable runnable) {
+        // Wrap in another method and catch exceptions.
+        javaPlugin.getServer().getScheduler().runTask(javaPlugin, wrap(runnable));
+    }
+
+    private Runnable wrap(Runnable runnable) {
+        return () -> {
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                log.error("Error while executing runnable!", e);
+            }
+        };
     }
 }

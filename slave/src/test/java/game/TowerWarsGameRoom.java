@@ -1,4 +1,4 @@
-/**
+package game; /**
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
@@ -24,48 +24,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package state;
+import eu.matejkormuth.mgapi.api.Game;
+import fw.state.GameState;
+import fw.state.StateGameRoom;
 
-import eu.matejkormuth.mgapi.api.RoomState;
+import java.util.List;
+import java.util.UUID;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+public class TowerWarsGameRoom extends StateGameRoom {
 
-public abstract class GameState {
-
-    // <Field name, Field>
-    final Map<String, Field> shared = new HashMap<>();
-
-    // Corresponding room state.
-    private final RoomState roomState;
-    // Reference back to original room.
-    private final StateGameRoom gameRoom;
-
-    protected GameState(RoomState roomState, StateGameRoom gameRoom) {
-        this.roomState = roomState;
-        this.gameRoom = gameRoom;
-
-        this.initShared();
+    protected TowerWarsGameRoom(UUID uuid, String name, Game game, int maxPlayers) {
+        super(uuid, name, game, maxPlayers);
     }
 
-    private void initShared() {
-        for (Field field : this.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(Shared.class)) {
-                shared.put(field.getName(), field);
-            }
-        }
+    @Override
+    protected void onCreate() {
+
     }
 
-    public StateGameRoom getRoom() {
-        return gameRoom;
+    @Override
+    protected void register(List<GameState> states) {
+        states.add(new TowerWarsLobbyState(4, this));
+        states.add(new TowerWarsPhase1State(this));
+        states.add(new TowerWarsResettingState(this));
     }
 
-    public RoomState getRoomState() {
-        return roomState;
+    @Override
+    protected Class<? extends GameState> getDefaultState() {
+        return TowerWarsLobbyState.class;
     }
-
-    public abstract void onActivate(GameState oldState);
-
-    public abstract void onDeactivate(GameState newState);
 }

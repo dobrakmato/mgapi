@@ -24,32 +24,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import eu.matejkormuth.mgapi.api.Game;
-import state.GameState;
-import state.StateGameRoom;
+package fw.teams.properties;
 
-import java.util.List;
-import java.util.UUID;
+import fw.teams.TeamProperty;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
-public class TestGameRoom extends StateGameRoom {
+public class ColoredNickname implements TeamProperty {
 
-    protected TestGameRoom(UUID uuid, String name, Game game, int maxPlayers) {
-        super(uuid, name, game, maxPlayers);
+    private final ChatColor chatColor;
+
+    public ColoredNickname(ChatColor color) {
+        this.chatColor = color;
     }
 
     @Override
-    protected void onCreate() {
-
-    }
-
-    @Override
-    protected void register(List<GameState> states) {
-        states.add(new TestGameLobbyState(4, this));
-        states.add(new TestGamePlayingState(this));
-    }
-
-    @Override
-    protected Class<? extends GameState> getDefaultState() {
-        return TestGameLobbyState.class;
+    public void applyTo(Player player) {
+        // TODO: Apply, somehow...
     }
 }
