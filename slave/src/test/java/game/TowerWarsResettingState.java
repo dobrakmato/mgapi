@@ -36,15 +36,15 @@ public class TowerWarsResettingState extends GameState {
 
     // Teams.
     @Shared
-    Team redTeam = new Team();
+    Team redTeam;
     @Shared
-    Team greenTeam = new Team();
+    Team greenTeam;
     @Shared
-    Team yellowTeam = new Team();
+    Team yellowTeam;
     @Shared
-    Team blueTeam = new Team();
+    Team blueTeam;
     @Shared
-    Team defenseTeam = new Team();
+    Team defenseTeam;
 
     public TowerWarsResettingState(StateGameRoom testGameRoom) {
         super(RoomState.RESETING, testGameRoom);

@@ -2,17 +2,17 @@
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * <p>
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,10 +30,14 @@ import eu.matejkormuth.mgapi.slave.api.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Represents countdown.
  */
 public class Countdown {
+
+    private static final AtomicInteger counter = new AtomicInteger(0);
 
     /**
      * Length of whole countdown.
@@ -48,6 +52,8 @@ public class Countdown {
      */
     private final long tickLength;
 
+    private final String name;
+
     // Id of bukkit task.
     private int taskId;
 
@@ -56,7 +62,23 @@ public class Countdown {
      */
     public final Event<Void> TimeUpEvent = new Event<>();
 
+    /**
+     * Creates a new countdown object with specified countdown length and with default name.
+     *
+     * @param time length of countdown
+     */
     public Countdown(Time time) {
+        this(time, "Countdown-" + counter.incrementAndGet());
+    }
+
+    /**
+     * Creates a new countdown object with specified countdown length and specified name.
+     *
+     * @param time length of the countdown
+     * @param name name of the countdown
+     */
+    public Countdown(Time time, String name) {
+        this.name = name;
         this.length = time.toLongTicks();
 
         if (this.length >= 20) {
@@ -100,5 +122,15 @@ public class Countdown {
     public void start() {
         JavaPlugin plugin = null; // TODO: FIX!!!
         this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 0, tickLength);
+    }
+
+    @Override
+    public String toString() {
+        return "Countdown{" +
+                "name='" + name + '\'' +
+                ", length=" + length +
+                ", timeLeft=" + timeLeft +
+                ", tickLength=" + tickLength +
+                '}';
     }
 }

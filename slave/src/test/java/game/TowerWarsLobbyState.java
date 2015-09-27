@@ -2,17 +2,17 @@
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * <p>
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -56,11 +56,16 @@ import fw.state.GameState;
 import fw.state.Shared;
 import fw.state.StateGameRoom;
 import fw.teams.Team;
+import fw.teams.properties.ColoredNickname;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TowerWarsLobbyState extends GameState {
 
-    // Lots of shared fields.
+    /*
+     * We create default values to shared fields in default game state. Then
+     * these values are copied to all other states when they are activated.
+     */
     @Shared
     Team redTeam = new Team();
     @Shared
@@ -78,6 +83,13 @@ public class TowerWarsLobbyState extends GameState {
     public TowerWarsLobbyState(int minimumPlayers, StateGameRoom gameRoom) {
         super(RoomState.WAITING, gameRoom);
         this.minimumPlayers = minimumPlayers;
+
+        // Initialize team properties.
+        redTeam.addProperty(new ColoredNickname(ChatColor.RED));
+        greenTeam.addProperty(new ColoredNickname(ChatColor.GREEN));
+        yellowTeam.addProperty(new ColoredNickname(ChatColor.YELLOW));
+        blueTeam.addProperty(new ColoredNickname(ChatColor.BLUE));
+        defenseTeam.addProperty(new ColoredNickname(ChatColor.WHITE));
     }
 
     @Override
