@@ -1,4 +1,5 @@
-package game; /**
+package game;
+/**
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
@@ -30,11 +31,11 @@ import fw.Countdown;
 import fw.Region;
 import fw.Summoner;
 import fw.Time;
+import fw.config.Config;
 import fw.state.GameState;
 import fw.state.Shared;
 import fw.state.StateGameRoom;
 import fw.teams.Team;
-import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 public class TowerWarsPhase1State extends GameState {
@@ -50,25 +51,33 @@ public class TowerWarsPhase1State extends GameState {
     @Shared
     Team defenseTeam;
 
+    // Will be injected.
+    final Config config;
+
     Region redRegion;
     Region greenRegion;
     Region yellowRegion;
     Region blueRegion;
     Region defenseRegion;
 
-    private Location summonerLocation;
     /**
      * Skeleton summon in the defense region.
      */
-    private Summoner summoner = new Summoner(EntityType.SKELETON, summonerLocation);
+    private final Summoner summoner;
 
     /**
      * Phase One length is 20 minutes.
      */
-    private Countdown countdown = new Countdown(Time.ofMinutes(20), "Phase One");
+    private final Countdown countdown;
 
-    protected TowerWarsPhase1State(StateGameRoom gameRoom) {
+    protected TowerWarsPhase1State(StateGameRoom gameRoom, Config config) {
         super(RoomState.PLAYING, gameRoom);
+        this.config = config;
+
+        // Initialize by configuration.
+        this.summoner = new Summoner(EntityType.SKELETON, config.getLocation("summoner.location"),
+                config.getTime("summoner.period", Time.ofSeconds(5)));
+        this.countdown = new Countdown(config.getTime("phase1.length", Time.ofMinutes(20)), "Phase One");
     }
 
     @Override

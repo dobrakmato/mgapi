@@ -28,6 +28,7 @@ package game; /**
 import eu.matejkormuth.mgapi.api.RoomState;
 import fw.Countdown;
 import fw.Time;
+import fw.config.Config;
 import fw.state.GameState;
 import fw.state.Shared;
 import fw.state.StateGameRoom;
@@ -52,6 +53,9 @@ public class TowerWarsPhase2State extends GameState {
     @Shared
     Team defenseTeam;
 
+    // Will be injected.
+    final Config config;
+
     /**
      * At least one player has SURVIVAL game mode.
      */
@@ -61,15 +65,15 @@ public class TowerWarsPhase2State extends GameState {
     /**
      * Phase One length is 10 minutes.
      */
-    private Countdown countdown = new Countdown(Time.ofMinutes(10), "Phase Two");
+    private final Countdown countdown;
     /**
      * Location of obsidian block.
      */
-    private Location obsidianLocation;
+    private final Location obsidianLocation;
     /**
      * Current amount of lives of obsidian block.
      */
-    private int obsidianLives = 3;
+    private int obsidianLives;
 
     // TODO: PVP
     // TODO: Spectator & Dead
@@ -78,8 +82,14 @@ public class TowerWarsPhase2State extends GameState {
     // TODO: All colored teams are killed win
 
     // Constructor.
-    protected TowerWarsPhase2State(StateGameRoom gameRoom) {
+    protected TowerWarsPhase2State(StateGameRoom gameRoom, Config config) {
         super(RoomState.PLAYING, gameRoom);
+        this.config = config;
+
+        // Initialize by configuration.
+        this.countdown = new Countdown(config.getTime("phase2.length", Time.ofMinutes(10)), "Phase Two");
+        this.obsidianLocation = config.getLocation("obsidian.location");
+        this.obsidianLives = config.getInt("obsidian.lives", 3);
     }
 
     // When obsidian is broken.
@@ -116,6 +126,6 @@ public class TowerWarsPhase2State extends GameState {
         countdown.TimeUpEvent.unsubscribe(this::timeUp);
 
         // Reset obsidian lives.
-        obsidianLives = 3;
+        obsidianLives = config.getInt("obsidian.lives", 3);
     }
 }

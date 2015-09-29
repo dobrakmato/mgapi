@@ -52,6 +52,7 @@ package game; /**
  */
 
 import eu.matejkormuth.mgapi.api.RoomState;
+import fw.config.Config;
 import fw.state.GameState;
 import fw.state.Shared;
 import fw.state.StateGameRoom;
@@ -77,12 +78,17 @@ public class TowerWarsLobbyState extends GameState {
     @Shared
     Team defenseTeam = new Team();
 
+    // Will be injected.
+    final Config config;
+
     // Minimum amount of players needed to start the game.
     private final int minimumPlayers;
 
-    public TowerWarsLobbyState(int minimumPlayers, StateGameRoom gameRoom) {
+    public TowerWarsLobbyState(StateGameRoom gameRoom, Config config) {
         super(RoomState.WAITING, gameRoom);
-        this.minimumPlayers = minimumPlayers;
+        this.config = config;
+
+        this.minimumPlayers = config.getInt("minimumPlayers", 4);
 
         // Initialize team properties.
         redTeam.addProperty(new ColoredNickname(ChatColor.RED));

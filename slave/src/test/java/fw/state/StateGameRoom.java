@@ -2,17 +2,17 @@
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * <p>
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -27,6 +27,7 @@
 package fw.state;
 
 import eu.matejkormuth.mgapi.api.Game;
+import eu.matejkormuth.mgapi.slave.api.Event;
 import eu.matejkormuth.mgapi.slave.api.GameRoom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,11 @@ public abstract class StateGameRoom extends GameRoom {
     private final Map<Class<? extends GameState>, GameState> allStates = new HashMap<>();
     // Current (last) state.
     private GameState lastState = null;
+
+    /**
+     * Called before state is going to be changed.
+     */
+    public final Event<GameState> onStateChange = new Event<>();
 
     protected StateGameRoom(UUID uuid, String name, Game game, int maxPlayers) {
         super(uuid, name, game, maxPlayers);
@@ -66,17 +72,26 @@ public abstract class StateGameRoom extends GameRoom {
                     new NullPointerException("state instance for class" + state.getName() + " was not found!"));
         }
 
+        // Process event hooks.
+        try {
+            onStateChange.call(stateInstance);
+        } catch (Exception e) {
+            log.error("Error while executing event onStateChange!", e);
+        }
+
         // Deactivate last game state.
         if (this.lastState != null) {
             this.lastState.onDeactivate(stateInstance);
         }
 
         // Copy shared values.
-        copySharedFromTo(this.lastState, stateInstance);
+        if (this.lastState != null) {
+            copySharedFromTo(this.lastState, stateInstance);
+        }
 
         // Activate new game state.
         this.setRoomState(stateInstance.getRoomState());
-        stateInstance.onActivate(this.lastState);
+        stateInstance.onActivate(stateInstance);
         this.lastState = stateInstance;
     }
 
@@ -131,6 +146,4 @@ public abstract class StateGameRoom extends GameRoom {
     }
 
     protected abstract void register(List<GameState> states);
-
-    protected abstract Class<? extends GameState> getDefaultState();
 }
