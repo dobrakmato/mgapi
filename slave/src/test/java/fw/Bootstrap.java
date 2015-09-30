@@ -26,41 +26,18 @@
  */
 package fw;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.plugin.Plugin;
+import fw.teams.Team;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Summoner {
-    private final EntityType type;
-    private final Location location;
-    private final Time period;
-    private int taskId;
+import java.util.function.Supplier;
 
-    public Summoner(EntityType type, Location summonerLocation, Time period) {
-        this.type = type;
-        this.location = summonerLocation;
-        this.period = period;
-    }
+public class Bootstrap {
 
-    public void activate() {
-        Plugin plugin = Container.get(JavaPlugin.class);
-        this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::spawn,
-                period.toLongTicks(), period.toLongTicks());
-    }
+    public Bootstrap(JavaPlugin plugin) {
 
-    public void deactivate() {
-        Bukkit.getScheduler().cancelTask(this.taskId);
-    }
+        // Put useful instances to container.
+        Container.put(JavaPlugin.class, plugin);
+        Container.put(Team.class, (Supplier<Team>) Team::new);
 
-    private void spawn() {
-        Entity entity = this.location.getWorld().spawnEntity(this.location, this.type);
-        if (entity instanceof LivingEntity) {
-            // Make them one hit to kill.
-            ((LivingEntity) entity).setHealth(1D);
-        }
     }
 }
