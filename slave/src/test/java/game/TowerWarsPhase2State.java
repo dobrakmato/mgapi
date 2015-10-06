@@ -69,15 +69,7 @@ import java.util.function.Predicate;
 public class TowerWarsPhase2State extends GameState {
 
     @Shared
-    Team redTeam;
-    @Shared
-    Team greenTeam;
-    @Shared
-    Team yellowTeam;
-    @Shared
-    Team blueTeam;
-    @Shared
-    Team defenseTeam;
+    TowerWarsShared shared;
 
     // Will be injected.
     final Config config;
@@ -100,6 +92,10 @@ public class TowerWarsPhase2State extends GameState {
      * Current amount of lives of obsidian block.
      */
     private int obsidianLives;
+    /**
+     * Whether is block break protection in defense region enabled or not.
+     */
+    private boolean disableBlockBreaks;
 
     // TODO: PVP
     // TODO: Spectator & Dead
@@ -129,6 +125,10 @@ public class TowerWarsPhase2State extends GameState {
             if (obsidianLives <= 0) {
                 // TODO: Some colored team won.
             }
+        } else if (disableBlockBreaks && shared.defenseRegion.isInside(event.getBlock())) {
+            // Cancel this block break event.
+            event.setCancelled(true);
+            event.getPlayer().sendMessage("You can't break blocks in phase 2.");
         }
     }
 
@@ -137,10 +137,13 @@ public class TowerWarsPhase2State extends GameState {
         // Start the countdown and subscribe.
         countdown.start();
         countdown.TimeUpEvent.subscribe(this::timeUp);
+
+        // Activate block break protection.
+        disableBlockBreaks = true;
     }
 
     private void timeUp(Void aVoid) {
-        if (isAlive.test(defenseTeam)) {
+        if (isAlive.test(shared.defenseTeam)) {
             // TODO: Defense team won.
         }
     }
@@ -150,6 +153,9 @@ public class TowerWarsPhase2State extends GameState {
         // Unsubscribe and reset countdown.
         countdown.reset();
         countdown.TimeUpEvent.unsubscribe(this::timeUp);
+
+        // Disable block break protection.
+        disableBlockBreaks = false;
 
         // Reset obsidian lives.
         obsidianLives = config.getInt("obsidian.lives", 3);

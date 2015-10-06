@@ -24,50 +24,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package game;
+package fw.chat;
 
-import eu.matejkormuth.mgapi.api.RoomState;
-import fw.state.GameState;
-import fw.state.Shared;
-import fw.state.StateGameRoom;
+import org.bukkit.entity.Player;
 
-public class TowerWarsResettingState extends GameState {
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
-    // Teams.
-    @Shared
-    TowerWarsShared shared;
+public class Channel implements Iterable<Player> {
 
-    public TowerWarsResettingState(StateGameRoom testGameRoom) {
-        super(RoomState.RESETING, testGameRoom);
+    private final String name;
+    private List<Player> receivers = new ArrayList<>();
+
+    public Channel(String name) {
+        this.name = name;
     }
 
-    @Override
-    public void onActivate(GameState oldState) {
-        // When this state is activated, perform large clean up.
-        cleanUp();
-
-        // After we're done cleaning, go to lobby state.
-        getRoom().activate(TowerWarsLobbyState.class);
+    public int size() {
+        return receivers.size();
     }
 
-    private void cleanUp() {
-        // Clear teams.
-        shared.redTeam.clear();
-        shared.greenTeam.clear();
-        shared.yellowTeam.clear();
-        shared.blueTeam.clear();
-        shared.defenseTeam.clear();
-
-        // Clear channels.
-        shared.redChannel.clear();
-        shared.greenChannel.clear();
-        shared.yellowChannel.clear();
-        shared.blueChannel.clear();
-        shared.defenseChannel.clear();
+    public boolean isEmpty() {
+        return receivers.isEmpty();
     }
 
-    @Override
-    public void onDeactivate(GameState newState) {
+    public Iterator<Player> iterator() {
+        return receivers.iterator();
+    }
 
+    public void clear() {
+        receivers.clear();
+    }
+
+    public boolean add(Player player) {
+        return receivers.add(player);
+    }
+
+    public boolean remove(Player o) {
+        return receivers.remove(o);
+    }
+
+    public Stream<Player> stream() {
+        return receivers.stream();
+    }
+
+    public void broadcast(String message) {
+        stream().forEach(p -> p.sendMessage(message));
+    }
+
+    public void broadcast(Player sender, String message) {
+        String formatted = sender + ": " + message;
+        stream().forEach(p -> p.sendMessage(formatted));
     }
 }

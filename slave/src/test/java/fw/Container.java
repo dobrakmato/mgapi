@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Represents application dependency injection container.
+ * Represents application service container.
  *
  * @author Matej Kormuth
  */

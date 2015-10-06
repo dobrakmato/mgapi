@@ -26,48 +26,30 @@
  */
 package game;
 
-import eu.matejkormuth.mgapi.api.RoomState;
-import fw.state.GameState;
-import fw.state.Shared;
-import fw.state.StateGameRoom;
+import fw.Region;
+import fw.chat.Channel;
+import fw.teams.Team;
 
-public class TowerWarsResettingState extends GameState {
+/**
+ * All shared variables are here.
+ */
+public class TowerWarsShared {
 
-    // Teams.
-    @Shared
-    TowerWarsShared shared;
+    Team redTeam = new Team();
+    Team greenTeam = new Team();
+    Team yellowTeam = new Team();
+    Team blueTeam = new Team();
+    Team defenseTeam = new Team();
 
-    public TowerWarsResettingState(StateGameRoom testGameRoom) {
-        super(RoomState.RESETING, testGameRoom);
-    }
+    Channel redChannel = new Channel("Red team");
+    Channel greenChannel = new Channel("Green team");
+    Channel yellowChannel = new Channel("Yellow team");
+    Channel blueChannel = new Channel("Blue team");
+    Channel defenseChannel = new Channel("Defense team");
 
-    @Override
-    public void onActivate(GameState oldState) {
-        // When this state is activated, perform large clean up.
-        cleanUp();
-
-        // After we're done cleaning, go to lobby state.
-        getRoom().activate(TowerWarsLobbyState.class);
-    }
-
-    private void cleanUp() {
-        // Clear teams.
-        shared.redTeam.clear();
-        shared.greenTeam.clear();
-        shared.yellowTeam.clear();
-        shared.blueTeam.clear();
-        shared.defenseTeam.clear();
-
-        // Clear channels.
-        shared.redChannel.clear();
-        shared.greenChannel.clear();
-        shared.yellowChannel.clear();
-        shared.blueChannel.clear();
-        shared.defenseChannel.clear();
-    }
-
-    @Override
-    public void onDeactivate(GameState newState) {
-
-    }
+    Region redRegion;
+    Region greenRegion;
+    Region yellowRegion;
+    Region blueRegion;
+    Region defenseRegion;
 }

@@ -54,40 +54,24 @@ package game;
 
 import eu.matejkormuth.mgapi.api.RoomState;
 import fw.Countdown;
-import fw.Region;
 import fw.Summoner;
 import fw.Time;
 import fw.config.Config;
 import fw.state.GameState;
 import fw.state.Shared;
 import fw.state.StateGameRoom;
-import fw.teams.Team;
 import org.bukkit.entity.EntityType;
 
 public class TowerWarsPhase1State extends GameState {
 
     @Shared
-    Team redTeam;
-    @Shared
-    Team greenTeam;
-    @Shared
-    Team yellowTeam;
-    @Shared
-    Team blueTeam;
-    @Shared
-    Team defenseTeam;
+    TowerWarsShared shared;
 
     // Will be injected.
     final Config config;
 
-    Region redRegion;
-    Region greenRegion;
-    Region yellowRegion;
-    Region blueRegion;
-    Region defenseRegion;
-
     /**
-     * Skeleton summon in the defense region.
+     * Skeleton summoner in the defense region.
      */
     private final Summoner summoner;
 
@@ -109,11 +93,11 @@ public class TowerWarsPhase1State extends GameState {
     @Override
     public void onActivate(GameState oldState) {
         // Apply all team properties to all players.
-        redTeam.applyAllProperties();
-        greenTeam.applyAllProperties();
-        blueTeam.applyAllProperties();
-        yellowTeam.applyAllProperties();
-        defenseTeam.applyAllProperties();
+        shared.redTeam.applyAllProperties();
+        shared.greenTeam.applyAllProperties();
+        shared.blueTeam.applyAllProperties();
+        shared.yellowTeam.applyAllProperties();
+        shared.defenseTeam.applyAllProperties();
 
         // Start phase countdown and subscribe to countdown end.
         countdown.start();

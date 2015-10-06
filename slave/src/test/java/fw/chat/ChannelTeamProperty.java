@@ -24,50 +24,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package game;
+package fw.chat;
 
-import eu.matejkormuth.mgapi.api.RoomState;
-import fw.state.GameState;
-import fw.state.Shared;
-import fw.state.StateGameRoom;
+import fw.teams.TeamProperty;
+import org.bukkit.entity.Player;
 
-public class TowerWarsResettingState extends GameState {
+public class ChannelTeamProperty implements TeamProperty {
 
-    // Teams.
-    @Shared
-    TowerWarsShared shared;
+    private final Channel channel;
 
-    public TowerWarsResettingState(StateGameRoom testGameRoom) {
-        super(RoomState.RESETING, testGameRoom);
+    public ChannelTeamProperty(Channel channel) {
+        this.channel = channel;
     }
 
     @Override
-    public void onActivate(GameState oldState) {
-        // When this state is activated, perform large clean up.
-        cleanUp();
-
-        // After we're done cleaning, go to lobby state.
-        getRoom().activate(TowerWarsLobbyState.class);
-    }
-
-    private void cleanUp() {
-        // Clear teams.
-        shared.redTeam.clear();
-        shared.greenTeam.clear();
-        shared.yellowTeam.clear();
-        shared.blueTeam.clear();
-        shared.defenseTeam.clear();
-
-        // Clear channels.
-        shared.redChannel.clear();
-        shared.greenChannel.clear();
-        shared.yellowChannel.clear();
-        shared.blueChannel.clear();
-        shared.defenseChannel.clear();
-    }
-
-    @Override
-    public void onDeactivate(GameState newState) {
-
+    public void applyTo(Player player) {
+        channel.add(player);
     }
 }
