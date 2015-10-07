@@ -24,17 +24,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave;
+package eu.matejkormuth.bmboot;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.annotation.Nonnull;
+import java.io.InputStream;
 
-/**
- * Annotation used to declare field as dependency and thus its value will be dynamically injected.
- */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Dependency {
+public class JarUtils {
+    private JarUtils() {
+    }
+
+    public static String readFile(@Nonnull String path) {
+        InputStream is = JarUtils.class.getClassLoader().getResourceAsStream(path);
+        try (java.util.Scanner s = new java.util.Scanner(is)) {
+            return s.useDelimiter("\\A").hasNext() ? s.next() : "";
+        }
+    }
 }

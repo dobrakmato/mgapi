@@ -26,6 +26,7 @@
  */
 package fw;
 
+import eu.matejkormuth.bmboot.facades.Container;
 import eu.matejkormuth.mgapi.slave.api.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,6 +39,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Countdown {
 
     private static final AtomicInteger counter = new AtomicInteger(0);
+
+    /**
+     * Ticks in second.
+     */
+    public static final int TICKS_IN_SECOND = 20;
 
     /**
      * Length of whole countdown.
@@ -81,8 +87,8 @@ public class Countdown {
         this.name = name;
         this.length = time.toLongTicks();
 
-        if (this.length >= 20) {
-            this.tickLength = 20;
+        if (this.length >= TICKS_IN_SECOND) {
+            this.tickLength = TICKS_IN_SECOND;
         } else {
             this.tickLength = this.length;
         }

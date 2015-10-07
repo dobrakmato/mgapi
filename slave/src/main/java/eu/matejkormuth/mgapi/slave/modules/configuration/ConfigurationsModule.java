@@ -26,9 +26,8 @@
  */
 package eu.matejkormuth.mgapi.slave.modules.configuration;
 
-
-import eu.matejkormuth.mgapi.slave.Dependency;
-import eu.matejkormuth.mgapi.slave.Module;
+import eu.matejkormuth.bmboot.Dependency;
+import eu.matejkormuth.bmboot.internal.Module;
 import eu.matejkormuth.mgapi.slave.modules.filestorage.FileStorageModule;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.slf4j.Logger;

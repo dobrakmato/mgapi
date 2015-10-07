@@ -26,8 +26,8 @@
  */
 package eu.matejkormuth.mgapi.slave.modules.filestorage;
 
-import eu.matejkormuth.mgapi.slave.Module;
-import eu.matejkormuth.mgapi.slave.PluginAccessor;
+import eu.matejkormuth.bmboot.facades.Container;
+import eu.matejkormuth.bmboot.internal.Module;
 import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +44,12 @@ public class FileStorageModule extends Module {
 
     private static final Logger log = LoggerFactory.getLogger(FileStorageModule.class);
 
-    private Plugin plugin = new PluginAccessor(this).getPlugin();
     private Path dataFolder;
 
     @Override
     public void onEnable() {
         // Set data folder provided by Bukkit.
-        dataFolder = plugin.getDataFolder().toPath();
+        dataFolder = Container.get(Plugin.class).getDataFolder().toPath();
         // Create all needed directories.
         safeMkdirs(dataFolder);
     }

@@ -26,8 +26,8 @@
  */
 package eu.matejkormuth.mgapi.slave.modules.communicaton;
 
-import eu.matejkormuth.mgapi.slave.Dependency;
-import eu.matejkormuth.mgapi.slave.Module;
+import eu.matejkormuth.bmboot.Dependency;
+import eu.matejkormuth.bmboot.internal.Module;
 import eu.matejkormuth.mgapi.slave.api.MasterServer;
 import eu.matejkormuth.mgapi.slave.api.SlaveServer;
 import eu.matejkormuth.mgapi.slave.modules.configuration.ConfigurationsModule;

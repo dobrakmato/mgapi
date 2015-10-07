@@ -24,11 +24,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave;
+package eu.matejkormuth.bmboot.internal;
 
+import eu.matejkormuth.bmboot.Dependency;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,19 +42,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents part of Starving project. Each module should declare dependencies to other modules in constructor method
- * by calling getDependencyList() and then adding all dependencies to that list.
+ * Represents part of application that can be enabled and disabled.
  */
 public abstract class Module {
 
-    // Logger.
-    private static final Logger log = LoggerFactory.getLogger(Module.class);
+    private final Logger log = LoggerFactory.getLogger(Module.class);
 
-    // Reference to JavaPlugin.
-    static final Plugin plugin = Bukkit.getPluginManager().getPlugin("mgslave");
-
-    // List of dependency modules.
+    // List of dependencies of this module.
     private final List<Class<? extends Module>> dependencies = new ArrayList<>();
+
+    // Container.
+    AppContainer container;
+
     // Whether this module is enabled or not.
     boolean enabled = false;
 
@@ -69,32 +71,22 @@ public abstract class Module {
 
     // DI - this method inject all dependency modules into instance.
     @SuppressWarnings("unchecked")
-    void injectDependencies(ModuleProvider provider) {
+    void injectDependencies() {
         for (Field f : this.getClass().getDeclaredFields()) {
             if (f.isAnnotationPresent(Dependency.class)) {
                 if (Module.class.isAssignableFrom(f.getType())) {
-                    if(!f.isAccessible()) {
+                    if (!f.isAccessible()) {
                         f.setAccessible(true);
                     }
 
                     try {
-                        f.set(this, provider.getModule(f.getType()));
+                        f.set(this, container.get(f.getType()));
                     } catch (IllegalAccessException e) {
                         log.error("Can't inject dependencies!", e);
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Registers specified Bukkit Listener so it will receive events.
-     *
-     * @param listener listener to register
-     */
-    public void listener(@Nonnull Listener listener) {
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
-        log.debug("Registering Listener {}...", listener.getClass());
     }
 
     /**
@@ -128,7 +120,34 @@ public abstract class Module {
         return enabled;
     }
 
-    public List<Class<? extends Module>> getDependencyList() {
+    /**
+     * Registers specified Bukkit Listener so it will receive events.
+     *
+     * @param listener listener to register
+     */
+    public void listener(@Nonnull Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, container.get(JavaPlugin.class));
+        log.debug("Registering Listener {}...", listener.getClass());
+    }
+
+    /**
+     * Gets the command with the given name, specific to this plugin. Commands
+     * need to be registered in the {@link PluginDescriptionFile#getCommands()
+     * PluginDescriptionFile} to exist at runtime.
+     *
+     * @param name name or alias of the command
+     * @return the plugin command if found, otherwise null
+     */
+    public PluginCommand command(@Nonnull String name) {
+        return container.get(JavaPlugin.class).getCommand(name);
+    }
+
+    /**
+     * Returns view to dependencies collection of this module.
+     *
+     * @return list of all dependency modules of this module
+     */
+    public List<Class<? extends Module>> getDependencies() {
         return Collections.unmodifiableList(dependencies);
     }
 

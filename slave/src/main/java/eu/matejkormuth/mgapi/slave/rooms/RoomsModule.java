@@ -26,8 +26,8 @@
  */
 package eu.matejkormuth.mgapi.slave.rooms;
 
-import eu.matejkormuth.mgapi.slave.Dependency;
-import eu.matejkormuth.mgapi.slave.Module;
+import eu.matejkormuth.bmboot.Dependency;
+import eu.matejkormuth.bmboot.internal.Module;
 import eu.matejkormuth.mgapi.slave.api.GameRoom;
 import eu.matejkormuth.mgapi.slave.api.MGAPI;
 import eu.matejkormuth.mgapi.slave.modules.configuration.ConfigurationsModule;

@@ -24,20 +24,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package fw;
+package eu.matejkormuth.bmboot;
 
-import fw.teams.Team;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.function.Supplier;
-
-public class Bootstrap {
-
-    public Bootstrap(JavaPlugin plugin) {
-
-        // Put useful instances to container.
-        Container.put(JavaPlugin.class, plugin);
-        Container.put(Team.class, (Supplier<Team>) Team::new);
-
-    }
+/**
+ * Annotation used to declare field as dependency and thus its value will be dynamically injected.
+ */
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Dependency {
 }

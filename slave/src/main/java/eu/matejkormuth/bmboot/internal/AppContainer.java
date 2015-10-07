@@ -24,26 +24,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package fw;
+package eu.matejkormuth.bmboot.internal;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import javax.annotation.Nonnull;
+import java.util.*;
 import java.util.function.Supplier;
+
 
 /**
  * Represents application service container.
  *
  * @author Matej Kormuth
  */
-public class Container {
+public final class AppContainer {
 
     // Internal map.
-    private static final Map<Class<?>, Object> container = new HashMap<>();
+    private final Map<Class<?>, Object> container;
+
+    /**
+     * Creates new container object.
+     */
+    public AppContainer() {
+        container = new HashMap<>();
+    }
 
     /**
      * Returns value for specified class. If container contains no mapping
@@ -59,7 +62,7 @@ public class Container {
      * @throws IllegalArgumentException if clazz is null or if mapping for
      *                                  this type was not found
      */
-    public static <T> T get(Class<T> clazz) {
+    public <T> T get(@Nonnull Class<T> clazz) {
         if (clazz == null) {
             throw new IllegalArgumentException("clazz is null");
         }
@@ -91,7 +94,7 @@ public class Container {
      * @return optional of instance of specified type
      * @throws IllegalArgumentException if clazz is null
      */
-    public static <T> Optional<T> optional(Class<T> clazz) {
+    public <T> Optional<T> optional(@Nonnull Class<T> clazz) {
         if (clazz == null) {
             throw new IllegalArgumentException("clazz is null");
         }
@@ -118,7 +121,7 @@ public class Container {
      * @param instance instance of specified type
      * @param <T>      type of object
      */
-    public static <T> void put(Class<T> clazz, T instance) {
+    public <T> void put(@Nonnull Class<T> clazz, T instance) {
         container.put(clazz, instance);
     }
 
@@ -130,22 +133,26 @@ public class Container {
      * @param factory factory of specified type
      * @param <T>     type of object
      */
-    public static <T> void put(Class<T> clazz, Supplier<T> factory) {
+    public <T> void put(@Nonnull Class<T> clazz, @Nonnull Supplier<T> factory) {
         container.put(clazz, factory);
+    }
+
+    /**
+     * Returns all registered instances and factories as collection.
+     *
+     * @return registered instances and factories in collection
+     */
+    public Collection<Object> getAll() {
+        return Collections.unmodifiableCollection(container.values());
     }
 
     // Internally used to cast (un)safely.
     @SuppressWarnings("unchecked")
-    private static <T> T cast(Object o) {
+    private <T> T cast(Object o) {
         return (T) o;
     }
 
-    /**
-     * Specifies that this value should be injected.
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD})
-    public @interface Inject {
-
+    void clear() {
+        container.clear();
     }
 }

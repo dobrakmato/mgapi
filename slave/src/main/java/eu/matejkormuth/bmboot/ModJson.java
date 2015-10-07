@@ -24,41 +24,65 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eu.matejkormuth.mgapi.slave.modules.sync;
+package eu.matejkormuth.bmboot;
 
-import eu.matejkormuth.bmboot.facades.Container;
-import eu.matejkormuth.bmboot.internal.Module;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyncModule extends Module {
+import javax.annotation.Nonnull;
 
-    private static final Logger log = LoggerFactory.getLogger(SyncModule.class);
+public class ModJson {
 
-    @Override
-    public void onEnable() {
+    private static final Logger log = LoggerFactory.getLogger(ModJson.class);
 
+    private String name;
+    private String version;
+    private String author;
+    private String[] modules;
+
+    public ModJson() {
     }
 
-    @Override
-    public void onDisable() {
+    public ModJson(@Nonnull String json) {
+        try {
+            JSONObject obj = new JSONObject(json);
+            this.name = obj.getString("name");
+            this.version = obj.getString("version");
+            this.author = obj.getString("author");
 
-    }
-
-    public void sync(Runnable runnable) {
-        // Wrap in another method and catch exceptions.
-        JavaPlugin javaPlugin = Container.get(JavaPlugin.class);
-        javaPlugin.getServer().getScheduler().runTask(javaPlugin, wrap(runnable));
-    }
-
-    private Runnable wrap(Runnable runnable) {
-        return () -> {
-            try {
-                runnable.run();
-            } catch (Exception e) {
-                log.error("Error while executing runnable!", e);
+            JSONArray array = obj.getJSONArray("modules");
+            this.modules = new String[array.length()];
+            for (int i = 0; i < array.length(); i++) {
+                this.modules[i] = array.getString(i);
             }
-        };
+        } catch (Exception e) {
+            log.error("Can't parse json file!", e);
+        }
+    }
+
+    public ModJson(@Nonnull String name, @Nonnull String version, @Nonnull String author, @Nonnull String[] modules) {
+        this.name = name;
+        this.version = version;
+        this.author = author;
+        this.modules = modules;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String[] getModules() {
+        return modules;
     }
 }
