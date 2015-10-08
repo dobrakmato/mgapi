@@ -2,17 +2,17 @@
  * mgslave - MGAPI - Slave
  * Copyright (c) 2015, Matej Kormuth <http://www.github.com/dobrakmato>
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * <p>
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -61,8 +61,10 @@ import fw.state.StateGameRoom;
 import fw.teams.Team;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.function.Predicate;
 
@@ -97,9 +99,7 @@ public class TowerWarsPhase2State extends GameState {
      */
     private boolean disableBlockBreaks;
 
-    // TODO: PVP
     // TODO: Spectator & Dead
-    // TODO: Bedrock layer
     // TODO: Whole defense team is killed win
     // TODO: All colored teams are killed win
 
@@ -112,6 +112,58 @@ public class TowerWarsPhase2State extends GameState {
         this.countdown = new Countdown(config.getTime("phase2.length", Time.ofMinutes(10)), "Phase Two");
         this.obsidianLocation = config.getLocation("obsidian.location");
         this.obsidianLives = config.getInt("obsidian.lives", 3);
+
+        // TODO: Register Bukkit events.
+    }
+
+    @EventHandler
+    private void onEntityDamaged(final EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+            if (this.getRoom().getPlayers().contains(event.getEntity())) {
+                Player damaged = (Player) event.getEntity();
+                Player damager = (Player) event.getDamager();
+
+                // If they are both from defense or colored team.
+                if (!(getTeam(damaged) == shared.defenseTeam || getTeam(damager) == shared.defenseTeam)) {
+                    // Cancel PVP.
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    private Team getTeam(Player player) {
+        for (Player p : shared.redTeam) {
+            if (player == p) {
+                return shared.redTeam;
+            }
+        }
+
+        for (Player p : shared.blueTeam) {
+            if (player == p) {
+                return shared.blueTeam;
+            }
+        }
+
+        for (Player p : shared.greenTeam) {
+            if (player == p) {
+                return shared.greenTeam;
+            }
+        }
+
+        for (Player p : shared.yellowTeam) {
+            if (player == p) {
+                return shared.yellowTeam;
+            }
+        }
+
+        for (Player p : shared.defenseTeam) {
+            if (player == p) {
+                return shared.defenseTeam;
+            }
+        }
+
+        return null;
     }
 
     // When obsidian is broken.
