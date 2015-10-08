@@ -43,7 +43,7 @@ public class Time {
     }
 
     public static Time ofTicks(long ticks) {
-        return new Time(ticks / 20 * 1000);
+        return new Time((long) (ticks * 50f));
     }
 
     public static Time ofSeconds(long seconds) {
@@ -59,10 +59,10 @@ public class Time {
     }
 
     public int toTicks() {
-        return (int) (this.milis / 1000 * 20);
+        return (int) (this.milis / 1000f * 20f);
     }
 
     public long toLongTicks() {
-        return this.milis / 1000 * 20;
+        return (long) (this.milis / 1000f * 20f);
     }
 }

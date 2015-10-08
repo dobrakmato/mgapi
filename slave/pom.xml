@@ -38,10 +38,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- JSONs -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20150729</version>
         </dependency>
 
         <!-- Expiration map -->
